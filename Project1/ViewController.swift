@@ -28,6 +28,8 @@ class ViewController: UITableViewController {
             }
         }
         pictures.sort()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -47,6 +49,12 @@ class ViewController: UITableViewController {
             vc.totalImages = pictures.count
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    
+    @objc func shareTapped() {
+        let vc = UIActivityViewController(activityItems: ["Please download StormViewer"], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
     }
 
 
