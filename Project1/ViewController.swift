@@ -17,17 +17,21 @@ class ViewController: UITableViewController {
         
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
-        let fm = FileManager.default
-        let path = Bundle.main.resourcePath!
-        let items = try! fm.contentsOfDirectory(atPath: path)
         
-        for item in items {
-            if item.hasPrefix("nssl") {
-                //This is a storm image
-                pictures.append(item)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let fm = FileManager.default
+            let path = Bundle.main.resourcePath!
+            let items = try! fm.contentsOfDirectory(atPath: path)
+            
+            for item in items {
+                if item.hasPrefix("nssl") {
+                    //This is a storm image
+                    self.pictures.append(item)
+                }
             }
+            self.pictures.sort()
+            self.tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
         }
-        pictures.sort()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
     }
