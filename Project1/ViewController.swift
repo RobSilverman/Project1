@@ -19,16 +19,28 @@ class ViewController: UITableViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         
         DispatchQueue.global(qos: .userInitiated).async {
-            let fm = FileManager.default
-            let path = Bundle.main.resourcePath!
-            let items = try! fm.contentsOfDirectory(atPath: path)
-            
-            for item in items {
-                if item.hasPrefix("nssl") {
-                    //This is a storm image
-                    let picture = Picture(name: item)
-                    self.pictures.append(picture)
+            let defaults = UserDefaults.standard
+            if let loadedPictures = defaults.object(forKey: "pictures") as? Data {
+                let jDecoder = JSONDecoder()
+                
+                do {
+                    self.pictures = try jDecoder.decode([Picture].self, from: loadedPictures)
+                } catch {
+                    print("Cannot load data")
                 }
+            } else {
+                let fm = FileManager.default
+                let path = Bundle.main.resourcePath!
+                let items = try! fm.contentsOfDirectory(atPath: path)
+                
+                for item in items {
+                    if item.hasPrefix("nssl") {
+                        //This is a storm image
+                        let picture = Picture(name: item)
+                        self.pictures.append(picture)
+                    }
+                }
+                
             }
             self.tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
         }
@@ -48,6 +60,7 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         pictures[indexPath.row].lookCount += 1
+        save()
         print("\(pictures[indexPath.row].fileName) views: \(pictures[indexPath.row].lookCount)")
         
         if let vc = storyboard?.instantiateViewController(identifier: "Detail") as? DetailViewController {
@@ -62,6 +75,16 @@ class ViewController: UITableViewController {
         let vc = UIActivityViewController(activityItems: ["Please download StormViewer"], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
+    }
+    
+    func save() {
+        let jEncoder = JSONEncoder()
+        if let jsonData = try? jEncoder.encode(pictures) {
+            let defaults = UserDefaults.standard
+            defaults.set(jsonData, forKey: "pictures")
+        } else {
+            print("Failed to save Pictures as JSON data")
+        }
     }
 
 
