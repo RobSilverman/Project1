@@ -9,7 +9,7 @@
 import UIKit
 
 class ViewController: UITableViewController {
-    var pictures = [String]()
+    var pictures = [Picture]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,10 +26,10 @@ class ViewController: UITableViewController {
             for item in items {
                 if item.hasPrefix("nssl") {
                     //This is a storm image
-                    self.pictures.append(item)
+                    let picture = Picture(name: item)
+                    self.pictures.append(picture)
                 }
             }
-            self.pictures.sort()
             self.tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
         }
         
@@ -42,13 +42,16 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
-        cell.textLabel?.text = pictures[indexPath.row]
+        cell.textLabel?.text = pictures[indexPath.row].fileName
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        pictures[indexPath.row].lookCount += 1
+        print("\(pictures[indexPath.row].fileName) views: \(pictures[indexPath.row].lookCount)")
+        
         if let vc = storyboard?.instantiateViewController(identifier: "Detail") as? DetailViewController {
-            vc.selectedImage = pictures[indexPath.row]
+            vc.selectedImage = pictures[indexPath.row].fileName
             vc.selectedLocation = indexPath.row + 1
             vc.totalImages = pictures.count
             navigationController?.pushViewController(vc, animated: true)
