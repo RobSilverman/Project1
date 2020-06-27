@@ -63,7 +63,7 @@ class ViewController: UITableViewController {
         save()
         print("\(pictures[indexPath.row].fileName) views: \(pictures[indexPath.row].lookCount)")
         
-        if let vc = storyboard?.instantiateViewController(identifier: "Detail") as? DetailViewController {
+        if let vc = storyboard?.instantiateViewController(identifier: "Broken") as? DetailViewController {
             vc.selectedImage = pictures[indexPath.row].fileName
             vc.selectedLocation = indexPath.row + 1
             vc.totalImages = pictures.count
