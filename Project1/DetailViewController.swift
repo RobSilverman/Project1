@@ -23,6 +23,8 @@ class DetailViewController: UIViewController {
         title = "Image \(selectedLocation!) of \(totalImages!)"
         navigationItem.largeTitleDisplayMode = .never
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
+        
+        assert(selectedImage != nil, "selectedImage has no value.")
     }
     
     override func viewWillAppear(_ animated: Bool) {
